@@ -1,0 +1,65 @@
+---
+version: '3.8'
+
+volumes:
+  grafana_data:
+  prometheus_data:
+  portainer_data:
+
+services:
+  node_exporter:
+    image: prom/node-exporter:v1.3.1
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    network_mode: host
+    pid: host
+    restart: always
+    volumes:
+      - '/:/host:ro,rslave'
+
+  docker_exporter:
+    image: prometheusnet/docker_exporter
+    container_name: docker_exporter
+    ports:
+      - "9417:9417"
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+  grafana:
+    image: grafana/grafana:8.3.1
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    restart: always
+    volumes:
+      - "grafana_data:/var/lib/grafana"
+
+  prometheus:
+    image: prom/prometheus:v2.31.1
+    container_name: prometheus
+    command:
+      - '--web.enable-admin-api'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles/prometheus'
+      - '--storage.tsdb.retention=90d'
+    ports:
+      - "9090:9090"
+    restart: always
+    volumes:
+      - "/etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "prometheus_data:/prometheus"
+
+  portainer:
+    image: portainer/portainer-ce:2.11.0
+    container_name: portainer
+    ports:
+      - "8000:8000"
+      - "9443:9443"
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "portainer_data:/data"
