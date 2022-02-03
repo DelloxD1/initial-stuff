@@ -19,7 +19,9 @@ services:
     pid: host
     restart: always
     volumes:
-      - '/:/host:ro,rslave'
+      - "/:/host:ro,rslave"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
 
   docker_exporter:
     image: prometheusnet/docker_exporter
@@ -29,7 +31,8 @@ services:
     restart: always
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
   grafana:
     image: grafana/grafana:8.3.1
     container_name: grafana
@@ -38,6 +41,8 @@ services:
     restart: always
     volumes:
       - "grafana_data:/var/lib/grafana"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
 
   prometheus:
     image: prom/prometheus:v2.31.1
@@ -55,6 +60,8 @@ services:
     volumes:
       - "/etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
       - "prometheus_data:/prometheus"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
 
   portainer:
     image: portainer/portainer-ce:2.11.0
@@ -66,3 +73,5 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "portainer_data:/data"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"

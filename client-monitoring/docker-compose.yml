@@ -12,6 +12,8 @@ services:
     restart: always
     volumes:
       - '/:/host:ro,rslave'
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
 
   docker_exporter:
     image: prometheusnet/docker_exporter
@@ -21,4 +23,5 @@ services:
     restart: always
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-    
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
